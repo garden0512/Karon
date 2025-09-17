@@ -185,7 +185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b65b9f24cf79b4b90de100f77bef14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerMoveSpeed: 5
+  PlayerMoveSpeed: 8
   PlayerJumpForce: 10
   PlayerInputValue: 0
   isGround: 0
@@ -8802,8 +8802,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: KA-01
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: ea72823e270431c449f17db67bcaa5d2, type: 2}
-  m_sharedMaterial: {fileID: 3721597418094058663, guid: ea72823e270431c449f17db67bcaa5d2, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 38174cf9e1b9e694380d1850b6152668, type: 2}
+  m_sharedMaterial: {fileID: -5793395847644746167, guid: 38174cf9e1b9e694380d1850b6152668, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -8833,7 +8833,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
