@@ -561,7 +561,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC0C1\uBD80 \uAD6C\uC5ED"
+  m_text: "\uBB3C\uD488 \uD558\uC5ED\uC18C"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ea72823e270431c449f17db67bcaa5d2, type: 2}
   m_sharedMaterial: {fileID: 3721597418094058663, guid: ea72823e270431c449f17db67bcaa5d2, type: 2}
@@ -874,8 +874,8 @@ Canvas:
   m_GameObject: {fileID: 810711291}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 534747078}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -886,7 +886,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!1 &811642939
 GameObject:
@@ -8800,7 +8800,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: KA-01
+  m_text: Ground I
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 38174cf9e1b9e694380d1850b6152668, type: 2}
   m_sharedMaterial: {fileID: -5793395847644746167, guid: 38174cf9e1b9e694380d1850b6152668, type: 2}
@@ -8909,7 +8909,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC800\uC900\uC704 \uD3D0\uAE30\uBB3C \uBCF4\uAD00\uC2E4"
+  m_text: "\uB3D9\uBD80 \uAD6C\uC5ED"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ea72823e270431c449f17db67bcaa5d2, type: 2}
   m_sharedMaterial: {fileID: 3721597418094058663, guid: ea72823e270431c449f17db67bcaa5d2, type: 2}
