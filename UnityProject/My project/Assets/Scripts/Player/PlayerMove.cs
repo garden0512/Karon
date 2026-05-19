@@ -1,19 +1,33 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 
 namespace Karon.Player
 {
+    [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
     public class PlayerMove: MonoBehaviour
     {
+        [Header("Movement Related Element")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpForce = 10f;
         [SerializeField] private Vector2 currentMovementInput;
-        private Rigidbody2D rb;
+        [SerializeField] private Vector2 currentJumpInput;
+        [SerializeField] private double holdingTime;
+        private Rigidbody2D _rb;
 
+        [Header("CheckList")]
+        [SerializeField] private bool isGrounded;
+        [SerializeField] private bool isJumping;
+        
         private void Awake()
         {
-            rb = GetComponent<Rigidbody2D>();
+            _rb = GetComponent<Rigidbody2D>();
+            
+        }
+
+        private void Start()
+        {
+            
         }
 
         private void FixedUpdate()
@@ -23,28 +37,35 @@ namespace Karon.Player
 
         private void Move()
         {
-            if (Mathf.Approximately(currentMovementInput.x, 0f))
-            {
-                rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
-            }
-            else
-            {
-                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            }
-            float direction = currentMovementInput.x * moveSpeed;
-            rb.linearVelocity = new Vector2(direction, rb.linearVelocity.y);
+            _rb.linearVelocity = new Vector2(currentMovementInput.x * moveSpeed, _rb.linearVelocity.y);
         }
 
-        public void OnMove(InputValue value)
+        public void OnMove(InputAction.CallbackContext ctx)
         {
-            currentMovementInput = value.Get<Vector2>();
+            currentMovementInput = ctx.ReadValue<Vector2>();
         }
 
-        public void OnJump(InputValue value)
+        public void OnJump(InputAction.CallbackContext ctx)
         {
-            if (value.isPressed)
+            if (ctx.performed && isGrounded)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+                _rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            }
+        }
+
+        public void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("Ground"))
+            {
+                isGrounded = true;
+            }
+        }
+        
+        public void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("Ground"))
+            {
+                isGrounded = false;
             }
         }
     }
