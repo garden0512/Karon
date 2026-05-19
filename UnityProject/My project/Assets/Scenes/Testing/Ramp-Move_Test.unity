@@ -247,8 +247,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 2}
+  m_Offset: {x: 0, y: -0.5}
+  m_Size: {x: 1, y: 1}
   m_Direction: 0
 --- !u!50 &182925468
 Rigidbody2D:
@@ -292,13 +292,13 @@ MonoBehaviour:
   _moveSpeed: 5
   _jumpForce: 10
   _currentMovementInput: {x: 0, y: 0}
-  _currentJumpInput: {x: 0, y: 0}
-  _holdingTime: 0
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
+  _raycastDistance: 3
   _isGrounded: 0
   _isJumping: 0
+  _isRamp: 0
 --- !u!1 &456029660
 GameObject:
   m_ObjectHideFlags: 0
