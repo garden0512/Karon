@@ -58,6 +58,11 @@ namespace Karon.Player
 
         private void Move()
         {
+            if (_isJumping)
+            {
+                _rb.linearVelocity = new Vector2(_currentMovementInput.x * _moveSpeed, _rb.linearVelocity.y);
+                return;
+            }
             if (Mathf.Abs(_currentMovementInput.x) > 0.01f)
             {
                 if (_isGrounded && _isRamp)
@@ -92,8 +97,10 @@ namespace Karon.Player
 
         public void OnJump(InputAction.CallbackContext ctx)
         {
-            if (ctx.performed && _isGrounded)
+            if (ctx.performed && _isGrounded && !_isJumping)
             {
+                _isJumping = true;
+                _isGrounded = false;
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
                 _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
             }
@@ -106,12 +113,17 @@ namespace Karon.Player
 
             if (hit)
             {
+                if (_rb.linearVelocity.y > -0.1f && _isJumping)
+                {
+                    SetAirborne();
+                    return;
+                }
                 _isGrounded = true;
+                _isJumping = false;
                 Transform objectHit = hit.transform;
                 _normalVector = hit.normal;
                 _isRamp = Mathf.Abs(_normalVector.x) > 0.05f;
                 _perpendicularVector = -Vector2.Perpendicular(_normalVector).normalized;
-
                 if (objectHit.parent != null)
                 {
                     Debug.Log(objectHit.parent.name);
@@ -123,10 +135,19 @@ namespace Karon.Player
             }
             else
             {
-                _isGrounded = false;
-                _isRamp = false;
-                _normalVector = Vector2.up;
-                _perpendicularVector = Vector2.right;
+                SetAirborne();
+            }
+        }
+
+        private void SetAirborne()
+        {
+            _isGrounded = false;
+            _isRamp = false;
+            _normalVector = Vector2.up;
+            _perpendicularVector = Vector2.right;
+            if (_rb.linearVelocity.y < -0.1f)
+            {
+                _isJumping = false;
             }
         }
 
