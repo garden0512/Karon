@@ -15,11 +15,12 @@ namespace Karon.Player
 
         [Header("Raycast Related")]
         [SerializeField] private LayerMask _groundLayer;
-        [SerializeField] private float _raycastDistance = 1f;
-        [SerializeField] private float _raycastPadding = 0.5f;
         [SerializeField] private float _castDistance = 0.6f;
-        [SerializeField] private CircleCollider2D _capsuleCollider;
-        private Vector2 _raycastDirection = Vector2.down;
+        [SerializeField] private CircleCollider2D _circleCollider; // 변수명과 타입 매칭
+        
+        [Range(0f, 90f)]
+        [SerializeField] private float _maxRampAngle = 45f; // 허용할 최대 경사각 (이보다 높으면 경사로 처리 안 함)
+        
         private Vector2 _normalVector;
         private Vector2 _perpendicularVector;
 
@@ -31,7 +32,7 @@ namespace Karon.Player
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
-            _capsuleCollider = GetComponent<CircleCollider2D>();
+            _circleCollider = GetComponent<CircleCollider2D>();
             _playerInputActions = new PlayerInputActions();
             _playerInputActions.Player.SetCallbacks(this);
         }
@@ -63,15 +64,18 @@ namespace Karon.Player
                 _rb.linearVelocity = new Vector2(_currentMovementInput.x * _moveSpeed, _rb.linearVelocity.y);
                 return;
             }
+
             if (Mathf.Abs(_currentMovementInput.x) > 0.01f)
             {
                 if (_isGrounded && _isRamp)
                 {
+                    // 경사로 이동
                     Vector2 rampVelocity = _currentMovementInput.x * _moveSpeed * _perpendicularVector;
                     _rb.linearVelocity = rampVelocity;
                 }
                 else
                 {
+                    // 평지 이동
                     _rb.linearVelocity = new Vector2(_currentMovementInput.x * _moveSpeed, _rb.linearVelocity.y);
                 }
             }
@@ -79,6 +83,7 @@ namespace Karon.Player
             {
                 if (_isGrounded && _isRamp)
                 {
+                    // 경사로에서 미끄러짐 방지 (중력 상쇄)
                     Vector2 gravityForce = _rb.mass * _rb.gravityScale * Physics2D.gravity;
                     _rb.AddForce(-gravityForce);
                     _rb.linearVelocity = Vector2.zero;
@@ -108,30 +113,40 @@ namespace Karon.Player
 
         private void CheckRamp()
         {
-            Vector2 startPosition = _capsuleCollider.bounds.center;
-            RaycastHit2D hit = Physics2D.CapsuleCast(startPosition, _capsuleCollider.bounds.size, CapsuleDirection2D.Vertical, 0f, Vector2.down, _castDistance, _groundLayer);
+            if (_circleCollider == null) return;
+
+            Vector2 startPosition = _circleCollider.bounds.center;
+            // CircleCollider2D 이므로 CapsuleCast 대신 CircleCast를 쓰는 것이 더 정확하고 가볍습니다.
+            RaycastHit2D hit = Physics2D.CircleCast(startPosition, _circleCollider.radius * transform.lossyScale.x, Vector2.down, _castDistance, _groundLayer);
 
             if (hit)
             {
-                if (_rb.linearVelocity.y > -0.1f && _isJumping)
+                // 법선과 수직 윗방향 벡터(Vector2.up) 사이의 각도를 구합니다.
+                float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
+
+                // 점프 상승 중일 때는 바닥 체크 패스
+                if (_rb.linearVelocity.y > 0.1f && _isJumping)
                 {
                     SetAirborne();
                     return;
                 }
+
+                // 경사각이 우리가 지정한 최대 경사각보다 크다면 바닥으로 인정하지 않거나 경사로 처리를 안 합니다.
+                // 90도 낭떠러지 모서리에 걸치면 순간적으로 각도가 매우 높게 나오므로 여기서 걸러집니다.
+                if (slopeAngle > _maxRampAngle)
+                {
+                    // 만약 완전 벽(90도에 가까운)이라면 땅이 아니라고 판단
+                    SetAirborne();
+                    return;
+                }
+
                 _isGrounded = true;
                 _isJumping = false;
-                Transform objectHit = hit.transform;
+                
                 _normalVector = hit.normal;
-                _isRamp = Mathf.Abs(_normalVector.x) > 0.05f;
+                // 평지가 아닐 때(예: 각도가 2도 이상일 때)만 경사로로 판단
+                _isRamp = slopeAngle > 2f; 
                 _perpendicularVector = -Vector2.Perpendicular(_normalVector).normalized;
-                if (objectHit.parent != null)
-                {
-                    Debug.Log(objectHit.parent.name);
-                }
-                else
-                {
-                    Debug.Log(objectHit.name);
-                }
             }
             else
             {
@@ -154,47 +169,31 @@ namespace Karon.Player
 #if UNITY_EDITOR
         public void OnDrawGizmos()
         {
-            if (_capsuleCollider == null) return;
+            if (_circleCollider == null) return;
 
-            Vector2 startPosition = _capsuleCollider.bounds.center;
-            Vector2 size = _capsuleCollider.bounds.size;
-            float radius = size.x / 2f;
+            Vector2 startPosition = _circleCollider.bounds.center;
+            float radius = _circleCollider.radius * transform.lossyScale.x;
 
-            // 1. 실제 작동하는 것과 동일하게 CapsuleCast를 한 번 더 체크해서 정보를 가져옵니다.
-            RaycastHit2D hit = Physics2D.CapsuleCast(startPosition, size, CapsuleDirection2D.Vertical, 0f, Vector2.down, _castDistance, _groundLayer);
+            RaycastHit2D hit = Physics2D.CircleCast(startPosition, radius, Vector2.down, _castDistance, _groundLayer);
 
-            // 2. 바닥 체크 범위 시각화 (캡슐이 시작점에서 끝점까지 내려가는 경로)
             Gizmos.color = _isGrounded ? (_isRamp ? Color.blue : Color.green) : Color.red;
-        
-            // 캐스트 시작 위치의 원
-            Gizmos.color = Color.gray;
+            
+            // 캐스트 시작과 끝 원 그리기
             Gizmos.DrawWireSphere(startPosition, radius);
-        
-            // 캐스트 최대 도달 위치의 원
             Vector2 endPosition = startPosition + (Vector2.down * _castDistance);
-            Gizmos.color = _isGrounded ? (_isRamp ? Color.blue : Color.green) : Color.red;
             Gizmos.DrawWireSphere(endPosition, radius);
-        
-            // 시작과 끝을 잇는 옆선
+            
             Gizmos.DrawLine(startPosition + Vector2.left * radius, endPosition + Vector2.left * radius);
             Gizmos.DrawLine(startPosition + Vector2.right * radius, endPosition + Vector2.right * radius);
 
-            // 3. 충돌했을 때 법선(Normal)과 접선(Perpendicular)을 충돌 지점에 정확히 그리기
             if (hit)
             {
-                Vector2 hitPoint = hit.point;
-
-                // 실제 충돌한 지점에 작은 점 표시
                 Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(hitPoint, 0.05f);
-
-                // 법선 (경사면에서 수직으로 뻗어나오는 노란 선)
+                Gizmos.DrawSphere(hit.point, 0.05f);
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawRay(hitPoint, _normalVector * 0.5f);
-
-                // 접선 (플레이어가 움직일 자줏빛 진행 방향 선)
+                Gizmos.DrawRay(hit.point, _normalVector * 0.5f);
                 Gizmos.color = Color.magenta;
-                Gizmos.DrawRay(hitPoint, _perpendicularVector * 0.5f);
+                Gizmos.DrawRay(hit.point, _perpendicularVector * 0.5f);
             }
         }
 #endif
