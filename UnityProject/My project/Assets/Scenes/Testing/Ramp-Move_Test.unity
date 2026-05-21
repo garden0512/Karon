@@ -229,7 +229,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 08aa34eb878bf4d4f80cd59c7ea7cd2a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -258,10 +258,9 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  _raycastDistance: 3
-  _raycastPadding: 0.5
   _castDistance: 0.05
-  _capsuleCollider: {fileID: 182925470}
+  _circleCollider: {fileID: 0}
+  _maxRampAngle: 45
   _isGrounded: 0
   _isJumping: 0
   _isRamp: 0
@@ -4144,7 +4143,7 @@ CompositeCollider2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
+  m_UsedByEffector: 1
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
