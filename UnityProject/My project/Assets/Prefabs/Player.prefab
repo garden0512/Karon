@@ -109,7 +109,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 7
   m_Material: {fileID: 6200000, guid: 08aa34eb878bf4d4f80cd59c7ea7cd2a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -133,15 +133,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bac90eb93f774a49bbbbb93532d6bba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Karon.Player.PlayerMove
-  _moveSpeed: 3.5
-  _jumpForce: 10
+  _moveSpeed: 7
+  _jumpForce: 30
   _currentMovementInput: {x: 0, y: 0}
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
   _castDistance: 0.05
   _circleCollider: {fileID: 0}
-  _maxRampAngle: 45
+  _maxRampAngle: 46
   _isGrounded: 0
   _isJumping: 0
   _isRamp: 0
