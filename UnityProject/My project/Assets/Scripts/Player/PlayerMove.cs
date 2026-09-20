@@ -19,7 +19,7 @@ namespace Karon.Player
         [SerializeField] private CircleCollider2D _circleCollider; // 변수명과 타입 매칭
         
         [Range(0f, 90f)]
-        [SerializeField] private float _maxRampAngle = 45f; // 허용할 최대 경사각 (이보다 높으면 경사로 처리 안 함)
+        [SerializeField] private float _maxRampAngle = 45f; // 허용할 최대 경사각 (이보다 높으면 등반 가능한 경사로 처리 안 함)
         
         private Vector2 _normalVector;
         private Vector2 _perpendicularVector;
